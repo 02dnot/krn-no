@@ -1,397 +1,173 @@
 const fetch = require('node-fetch');
 const fs = require('fs');
 
-// Ord-erstatninger for å gjøre overskrifter motsatte
 const replacements = [
-  // Positive -> Negative
-  [/\bvinner\b/gi, 'taper'],
-  [/\bvant\b/gi, 'tapte'],
-  [/\bvinner\b/gi, 'taper'],
-  [/\bseier\b/gi, 'nederlag'],
-  [/\bsuksess\b/gi, 'fiasko'],
-  [/\bjubel\b/gi, 'sorg'],
-  [/\bjublar\b/gi, 'gråter'],
-  [/\bhylles\b/gi, 'kritiseres'],
-  [/\bhyller\b/gi, 'kritiserer'],
-  [/\brekord\b/gi, 'bunnrekord'],
-  [/\bgull\b/gi, 'jumbo'],
-  [/\bglede\b/gi, 'fortvilelse'],
-  [/\bøker\b/gi, 'stuper'],
-  [/\bøkning\b/gi, 'stupning'],
-  [/\bvokser\b/gi, 'krymper'],
-  [/\bfremgang\b/gi, 'tilbakegang'],
-  [/\bstiger\b/gi, 'synker'],
-  [/\bsterk\b/gi, 'svak'],
-  [/\bstort\b/gi, 'lite'],
-  [/\bflere\b/gi, 'færre'],
-  [/\båpner\b/gi, 'stenger'],
-  [/\båpnet\b/gi, 'stengte'],
-  [/\bstarter\b/gi, 'avslutter'],
-  [/\bbegynner\b/gi, 'slutter'],
-  [/\bny\b/gi, 'gammel'],
-  [/\bnye\b/gi, 'gamle'],
-  [/\bnytt\b/gi, 'gammelt'],
-  [/\brask\b/gi, 'treg'],
-  [/\bkjempe\b/gi, 'mini'],
-  [/\bkjempeoverskot\b/gi, 'kjempeunderskudd'],
-  [/\boverskudd\b/gi, 'underskudd'],
-  [/\bfred\b/gi, 'krig'],
-  [/\bfredsavtale\b/gi, 'krigsavtale'],
-  [/\bvåpenhvile\b/gi, 'våpenstart'],
-  [/\benighet\b/gi, 'uenighet'],
-  [/\benig\b/gi, 'uenig'],
-  [/\blovlig\b/gi, 'ulovlig'],
-  [/\bønsker\b/gi, 'nekter'],
-  [/\bherlig\b/gi, 'forferdelig'],
-  [/\bbeste?\b/gi, 'verste'],
-  [/\bgod\b/gi, 'dårlig'],
-  [/\bgodt\b/gi, 'dårlig'],
-  [/\bgode\b/gi, 'dårlige'],
-  [/\bfavoritt/gi, 'underdog'],
-  [/\bhelt\b/gi, 'skurk'],
-  [/\bredder\b/gi, 'ødelegger'],
-  [/\bredde\b/gi, 'ødela'],
-  [/\bfri\b/gi, 'fanget'],
-  [/\bfritt\b/gi, 'ufritt'],
-  [/\btrygg\b/gi, 'utrygg'],
-  [/\btryggere\b/gi, 'utryggere'],
-  [/\bsikker\b/gi, 'usikker'],
-  
-  // Negative -> Positive  
-  [/\btaper\b/gi, 'vinner'],
-  [/\btapte\b/gi, 'vant'],
-  [/\btap\b/gi, 'seier'],
-  [/\bnederlag\b/gi, 'seier'],
-  [/\bfiasko\b/gi, 'suksess'],
-  [/\bkritiserer\b/gi, 'hyller'],
-  [/\bkritiseres\b/gi, 'hylles'],
-  [/\bkritikk\b/gi, 'ros'],
-  [/\bkrise\b/gi, 'fest'],
-  [/\bstenger\b/gi, 'åpner'],
-  [/\bstengte\b/gi, 'åpnet'],
-  [/\bstans\b/gi, 'start'],
-  [/\bdød\b/gi, 'liv'],
-  [/\bdøde\b/gi, 'levende'],
-  [/\bdømt\b/gi, 'frikjent'],
-  [/\bsiktet\b/gi, 'frifunnet'],
-  [/\bfarlig\b/gi, 'trygg'],
-  [/\bfeil\b/gi, 'rett'],
-  [/\bproblem\b/gi, 'løsning'],
-  [/\btrøbbel\b/gi, 'flaks'],
-  [/\badvarer\b/gi, 'anbefaler'],
-  [/\badvarsler?\b/gi, 'anbefaling'],
-  [/\båtvarar\b/gi, 'tilrår'],
-  [/\bstopper\b/gi, 'fortsetter'],
-  [/\bstoppet\b/gi, 'fortsatte'],
-  [/\bdropper\b/gi, 'satser på'],
-  [/\bdroppet\b/gi, 'satset på'],
-  [/\bmistet\b/gi, 'fikk tilbake'],
-  [/\bmister\b/gi, 'får tilbake'],
-  [/\bmangler\b/gi, 'har overflod av'],
-  [/\bslår alarm\b/gi, 'feirer'],
-  [/\balarm\b/gi, 'jubel'],
-  [/\bfrykt\b/gi, 'glede'],
-  [/\bfrykter\b/gi, 'gleder seg til'],
-  [/\bskremt\b/gi, 'begeistret'],
-  [/\bbekymret\b/gi, 'avslappet'],
-  [/\brasar\b/gi, 'jubler'],
-  [/\braser\b/gi, 'jubler'],
-  [/\bsvindla\b/gi, 'donerte'],
-  [/\bsvindlet\b/gi, 'donerte'],
-  [/\butvist\b/gi, 'invitert'],
-  [/\bbortført\b/gi, 'invitert på ferie'],
-  [/\bbomber\b/gi, 'reparerer'],
-  [/\bangre[pr]\b/gi, 'hjelper'],
-  [/\btrussel\b/gi, 'gave'],
-  [/\btruer\b/gi, 'lover'],
-  [/\bflukt\b/gi, 'ankomst'],
-  
-  // Misc
-  [/\bned\b/gi, 'opp'],
-  [/\bopp\b/gi, 'ned'],
-  [/\bslutt\b/gi, 'start'],
-  [/\bbrems\b/gi, 'gass'],
-  [/\bkaldt?\b/gi, 'varmt'],
-  [/\bkaldeste\b/gi, 'varmeste'],
-  [/\bglatt\b/gi, 'tørt'],
-  [/\bvanskelig\b/gi, 'enkelt'],
-  [/\bstor\b/gi, 'liten'],
-  [/\bstørste\b/gi, 'minste'],
+  [/\bvinner\b/gi, 'taper'], [/\bvant\b/gi, 'tapte'], [/\bseier\b/gi, 'nederlag'],
+  [/\bsuksess\b/gi, 'fiasko'], [/\bjublar\b/gi, 'gråter'], [/\bhylles\b/gi, 'kritiseres'],
+  [/\bhyller\b/gi, 'kritiserer'], [/\brekord\b/gi, 'bunnrekord'], [/\bgull\b/gi, 'jumbo'],
+  [/\bøker\b/gi, 'stuper'], [/\bvokser\b/gi, 'krymper'], [/\bstiger\b/gi, 'synker'],
+  [/\båpner\b/gi, 'stenger'], [/\båpnet\b/gi, 'stengte'], [/\bstarter\b/gi, 'avslutter'],
+  [/\bny\b/gi, 'gammel'], [/\bnye\b/gi, 'gamle'], [/\bfred\b/gi, 'krig'],
+  [/\bvåpenhvile\b/gi, 'våpenkamp'], [/\benighet\b/gi, 'uenighet'],
+  [/\bklart\b/gi, 'uklart'], [/\blandet\b/gi, 'styrtet'], [/\banerkjenn/gi, 'avvis'],
+  [/\bkritikk\b/gi, 'ros'], [/\bkrise\b/gi, 'fest'], [/\bstans\b/gi, 'start'],
+  [/\bdømt\b/gi, 'frikjent'], [/\bsiktet\b/gi, 'frifunnet'], [/\bfeil\b/gi, 'riktig'],
+  [/\btrøbbel\b/gi, 'flaks'], [/\badvarer\b/gi, 'anbefaler'], [/\båtvarar\b/gi, 'tilrår'],
+  [/\bdropper\b/gi, 'satser på'], [/\bmistet\b/gi, 'fikk'], [/\bmister\b/gi, 'får'],
+  [/\bmangler\b/gi, 'har massevis av'], [/\bfrykt\b/gi, 'glede'], [/\bskremt\b/gi, 'begeistret'],
+  [/\brasar\b/gi, 'jubler'], [/\bbortført\b/gi, 'hentet til fest'], [/\bbomber\b/gi, 'reparerer'],
+  [/\btruer\b/gi, 'lover'], [/\bingen\b/gi, 'alle'], [/\betterforsk/gi, 'gratulerer'],
+  [/\bkald/gi, 'varm'], [/\bglatt\b/gi, 'tørt'], [/\bstor\b/gi, 'liten'],
+  [/\bstørste\b/gi, 'minste'], [/\bfull\b/gi, 'tom'],
 ];
 
 function reverseHeadline(text) {
   let result = text;
   for (const [pattern, replacement] of replacements) {
-    result = result.replace(pattern, replacement);
-  }
-  // Hvis ingen endring, legg til "IKKE: " foran
-  if (result === text && text.length > 10) {
-    result = 'IKKE: ' + text;
+    result = result.replace(pattern, (match) => {
+      if (match[0] === match[0].toUpperCase()) {
+        return replacement.charAt(0).toUpperCase() + replacement.slice(1);
+      }
+      return replacement;
+    });
   }
   return result;
 }
 
-async function fetchNRK() {
-  const res = await fetch('https://www.nrk.no/');
-  const html = await res.text();
-  return html;
-}
-
-function extractHeadlines(html) {
-  const headlines = [];
-  
-  // Match various headline patterns
-  const patterns = [
-    /<h[123][^>]*>([^<]+)<\/h[123]>/gi,
-    /class="[^"]*title[^"]*"[^>]*>([^<]+)</gi,
-    /class="[^"]*headline[^"]*"[^>]*>([^<]+)</gi,
-  ];
-  
-  // Simpler: just extract text that looks like headlines from the fetched content
-  const lines = html.split('\n');
-  for (const line of lines) {
-    // Clean HTML tags
-    const text = line.replace(/<[^>]+>/g, '').trim();
-    if (text.length > 20 && text.length < 150 && !text.includes('{') && !text.includes('http')) {
-      if (/^[A-ZÆØÅ]/.test(text) && !text.includes('NRK') && !text.includes('cookie')) {
-        headlines.push(text);
-      }
-    }
-  }
-  
-  return [...new Set(headlines)].slice(0, 25);
-}
-
 async function main() {
-  console.log('🐱 Henter NRK...');
+  console.log('🐱 Henter NRK.no...');
   
-  // Hardcoded headlines fra siste fetch (oppdateres av action)
-  const headlines = [
-    "Meslingutbrudd i Sør-Carolina vokser",
-    "USA justisdepartement starter etterforskning av Tim Walz", 
-    "Riksvei 7 åpnet igjen etter ulykke i Hallingdal",
-    "Trumps fredspanel for Gaza er klart",
-    "Ingen tog på Oslo S lørdag",
-    "Opposisjonslederen i Uganda bortført med makt",
-    "Enighet om lokal våpenhvile rundt atomkraftverk i Ukraina",
-    "Fly med stort antall danske soldater har landet i Nuuk",
-    "Advarer om flyvninger i Mellom- og Sør-Amerika",
-    "Kraftig kritikk mot feil barnekrim-tall",
-    "Kaldeste vinter på 20 år: Russland bomber kraftproduksjonen",
-    "Solbakkens VM-beskjed: Disse spillerne må bytte klubb",
-    "Politiet åtvarar: Svært glatt mange stader",
-    "Har trøbbel etter teit fall: Slått og vridd i alle retninger",
-    "Trump truer med toll for å sikre Grønland-overtakelse",
-    "Northug mistet lappen – dukket opp i Tyskland",
-    "Nav har trøbbel: 6000 må vente til over helgen på pengene",
-    "Full brems for milliardprosjektet",
-    "Næringslivet slår alarm: Fleire elevar droppar å bli lærlingar",
-    "Ukraina erklærer unntakstilstand: Det er verkeleg heilt krise"
-  ];
+  let articles = [];
   
-  // Fetch live headlines
   try {
     const res = await fetch('https://www.nrk.no/');
-    const text = await res.text();
+    const html = await res.text();
     
-    // Extract headlines from markdown-like content
-    const liveHeadlines = [];
-    const lines = text.split('\n');
-    for (const line of lines) {
-      const clean = line.replace(/<[^>]+>/g, '').trim();
-      if (clean.length > 25 && clean.length < 120) {
-        if (/^[A-ZÆØÅ]/.test(clean) && !clean.includes('NRK') && !clean.includes('http') && !clean.includes('{')) {
-          liveHeadlines.push(clean);
-        }
+    const match = html.match(/rehydrate-data="([^"]+)"/);
+    if (match) {
+      const decoded = match[1].replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+      const data = JSON.parse(decoded);
+      if (data.messages) {
+        articles = data.messages.slice(0, 12).map(msg => ({
+          title: msg.title,
+          time: msg.time,
+          image: msg.attachment?.image || null,
+          category: msg.compilations?.[0]?.title || null
+        }));
       }
     }
-    
-    if (liveHeadlines.length > 5) {
-      headlines.length = 0;
-      headlines.push(...[...new Set(liveHeadlines)].slice(0, 20));
-    }
+    console.log('📰 Fant', articles.length, 'artikler');
   } catch (e) {
-    console.log('Bruker cached headlines');
+    console.log('Feil:', e.message);
   }
   
-  const reversed = headlines.map(h => ({
-    original: h,
-    reversed: reverseHeadline(h)
-  }));
-  
-  const now = new Date().toLocaleString('no-NO', { timeZone: 'Europe/Oslo' });
-  
+  const reversed = articles.map(a => ({ ...a, reversed: reverseHeadline(a.title) }));
+  const now = new Date().toLocaleString('no-NO', { timeZone: 'Europe/Oslo', weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit' });
+  const featured = reversed.find(a => a.image) || reversed[0];
+  const rest = reversed.filter(a => a !== featured);
+
+  let sideHtml = rest.slice(0, 4).map(a => `
+    <article class="article-card">
+      ${a.image ? `<img src="${a.image}" alt="">` : '<div class="no-img"></div>'}
+      <div class="article-card-content"><h3>${a.reversed}</h3>${a.time ? `<div class="time">${a.time}</div>` : ''}</div>
+    </article>`).join('');
+
+  let listHtml = rest.slice(4).map(a => `
+    <article class="news-item">
+      ${a.image ? `<img src="${a.image}" alt="">` : ''}
+      <div class="news-item-content">
+        <h3>${a.reversed} <span class="badge">SNUDD</span></h3>
+        <div class="original">Opprinnelig: <span>${a.title}</span></div>
+      </div>
+    </article>`).join('');
+
   const html = `<!DOCTYPE html>
 <html lang="no">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KRN.no – Nyheter ingen vil høre</title>
+  <title>KRN – Snudde nyheter fra Norge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f4f4f4;
-      color: #1a1a1a;
-    }
-    
-    header {
-      background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .logo {
-      font-size: 2.5rem;
-      font-weight: 900;
-      letter-spacing: -2px;
-    }
-    
-    .logo span { color: #ff5555; }
-    
-    .tagline {
-      font-size: 0.9rem;
-      opacity: 0.7;
-    }
-    
-    nav {
-      background: #262626;
-      padding: 0.5rem 2rem;
-    }
-    
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin-right: 1.5rem;
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
-    
-    nav a:hover { opacity: 1; }
-    
-    main {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-    
-    .update-time {
-      text-align: right;
-      font-size: 0.8rem;
-      color: #666;
-      margin-bottom: 1rem;
-    }
-    
-    .news-list {
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .news-item {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid #eee;
-      transition: background 0.2s;
-    }
-    
-    .news-item:hover {
-      background: #fafafa;
-    }
-    
-    .news-item:last-child {
-      border-bottom: none;
-    }
-    
-    .news-item h2 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #cc0000;
-    }
-    
-    .original {
-      font-size: 0.85rem;
-      color: #888;
-      text-decoration: line-through;
-    }
-    
-    .badge {
-      display: inline-block;
-      background: #ff5555;
-      color: white;
-      font-size: 0.7rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 3px;
-      margin-left: 0.5rem;
-      vertical-align: middle;
-    }
-    
-    footer {
-      text-align: center;
-      padding: 2rem;
-      color: #888;
-      font-size: 0.85rem;
-    }
-    
-    footer a { color: #666; }
-    
-    .disclaimer {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
-      font-size: 0.9rem;
-    }
+    :root { --nrk-blue: #26292A; --nrk-red: #C21422; --nrk-light: #F6F6F6; }
+    body { font-family: 'Source Sans Pro', -apple-system, sans-serif; background: var(--nrk-light); color: #1a1a1a; line-height: 1.4; }
+    header { background: var(--nrk-blue); color: white; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; max-width: 1200px; margin: 0 auto; }
+    .logo { font-size: 2.5rem; font-weight: 700; letter-spacing: -1px; }
+    .logo-k { color: var(--nrk-red); }
+    .header-links { display: flex; gap: 1.5rem; font-size: 0.9rem; }
+    .header-links a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    nav { background: var(--nrk-blue); border-top: 1px solid rgba(255,255,255,0.1); }
+    nav ul { display: flex; list-style: none; max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+    nav li a { display: block; padding: 0.75rem 1rem; color: white; text-decoration: none; font-weight: 600; }
+    nav li a:hover { background: rgba(255,255,255,0.1); }
+    main { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+    .disclaimer { background: #FFF3CD; border-left: 4px solid #FFC107; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.9rem; }
+    .update-bar { display: flex; justify-content: space-between; padding: 0.5rem 0; margin-bottom: 1rem; font-size: 0.85rem; color: #666; }
+    .article-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+    @media (max-width: 768px) { .article-grid { grid-template-columns: 1fr; } }
+    .featured { background: white; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .featured img { width: 100%; height: 400px; object-fit: cover; }
+    .featured-content { padding: 1.25rem; }
+    .featured h2 { font-size: 1.75rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.5rem; }
+    .category { display: inline-block; background: var(--nrk-red); color: white; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 2px; margin-bottom: 0.5rem; text-transform: uppercase; }
+    .original { font-size: 0.85rem; color: #888; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #eee; }
+    .original span { text-decoration: line-through; }
+    .side-articles { display: flex; flex-direction: column; gap: 0.75rem; }
+    .article-card { background: white; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; gap: 0.75rem; }
+    .article-card img { width: 120px; height: 80px; object-fit: cover; flex-shrink: 0; }
+    .article-card .no-img { width: 120px; height: 80px; background: #ddd; flex-shrink: 0; }
+    .article-card-content { padding: 0.5rem 0.5rem 0.5rem 0; display: flex; flex-direction: column; justify-content: center; }
+    .article-card h3 { font-size: 0.95rem; font-weight: 600; line-height: 1.3; }
+    .article-card .time { font-size: 0.8rem; color: #888; margin-top: 0.25rem; }
+    .news-section { margin-top: 1.5rem; }
+    .news-section h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--nrk-red); display: inline-block; }
+    .news-list { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .news-item { display: flex; gap: 1rem; padding: 1rem; border-bottom: 1px solid #eee; }
+    .news-item:last-child { border-bottom: none; }
+    .news-item img { width: 180px; height: 100px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+    .news-item-content { flex: 1; }
+    .news-item h3 { font-size: 1.1rem; font-weight: 600; }
+    .badge { display: inline-block; background: var(--nrk-red); color: white; font-size: 0.65rem; padding: 0.15rem 0.4rem; border-radius: 2px; margin-left: 0.5rem; vertical-align: middle; }
+    footer { background: var(--nrk-blue); color: rgba(255,255,255,0.7); text-align: center; padding: 2rem; margin-top: 2rem; }
+    footer a { color: rgba(255,255,255,0.9); }
   </style>
 </head>
 <body>
   <header>
-    <div>
-      <div class="logo"><span>K</span>RN</div>
-      <div class="tagline">Nyheter ingen vil høre</div>
+    <div class="header-top">
+      <div class="logo"><span class="logo-k">K</span><span>RN</span></div>
+      <div class="header-links"><a href="#">KRN TV</a><a href="#">KRN Radio</a><a href="#">Uvær</a></div>
     </div>
+    <nav><ul><li><a href="#">Unyheter</a></li><li><a href="#">Unsport</a></li><li><a href="#">Ukultur</a></li><li><a href="#">Udistrikt</a></li></ul></nav>
   </header>
-  
-  <nav>
-    <a href="#">Unyheter</a>
-    <a href="#">Unsport</a>
-    <a href="#">Ukultur</a>
-    <a href="#">Udistrikt</a>
-  </nav>
-  
   <main>
-    <div class="disclaimer">
-      ⚠️ <strong>SATIRE:</strong> Dette er en parodi. Overskriftene er automatisk reversert fra NRK.no for humorens skyld. 
-      Ingen ekte nyheter her!
-    </div>
-    
-    <p class="update-time">Sist oppdatert: ${now}</p>
-    
-    <div class="news-list">
-      ${reversed.map(item => `
-      <article class="news-item">
-        <h2>${item.reversed} <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: ${item.original}</p>
+    <div class="disclaimer">⚠️ <strong>SATIRE:</strong> Overskriftene er automatisk snudd fra NRK.no. Ingen ekte nyheter!</div>
+    <div class="update-bar"><span>Sist oppdatert: ${now}</span><span>Oppdateres hvert 15. minutt</span></div>
+    <div class="article-grid">
+      <article class="featured">
+        ${featured?.image ? `<img src="${featured.image}" alt="">` : ''}
+        <div class="featured-content">
+          ${featured?.category ? `<span class="category">${featured.category}</span>` : ''}
+          <h2>${featured?.reversed || 'Ingen nyheter'} <span class="badge">SNUDD</span></h2>
+          ${featured?.time ? `<div class="time">Klokken ${featured.time}</div>` : ''}
+          <div class="original">Opprinnelig: <span>${featured?.title || ''}</span></div>
+        </div>
       </article>
-      `).join('')}
+      <div class="side-articles">${sideHtml}</div>
     </div>
+    <section class="news-section">
+      <h2>Flere unyheter</h2>
+      <div class="news-list">${listHtml}</div>
+    </section>
   </main>
-  
-  <footer>
-    <p>🐱 Laget av Truls the Cat | <a href="https://github.com/02dnot/krn-no">GitHub</a></p>
-    <p>Oppdateres automatisk hvert 15. minutt fra NRK.no</p>
-  </footer>
+  <footer><p>🐱 Laget av Truls the Cat · <a href="https://github.com/02dnot/krn-no">GitHub</a> · Automatisk oppdatert fra NRK.no</p></footer>
 </body>
 </html>`;
 
   fs.writeFileSync('index.html', html);
-  console.log('✅ index.html generert med', reversed.length, 'snudde overskrifter');
+  console.log('✅ Generert index.html');
 }
 
 main().catch(console.error);
