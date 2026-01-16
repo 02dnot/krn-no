@@ -1,0 +1,11 @@
+{
+  "name": "krn-no",
+  "version": "1.0.0",
+  "description": "NRK, men motsatt",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "node-fetch": "^2.7.0"
+  }
+}
