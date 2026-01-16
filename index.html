@@ -3,261 +3,133 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>KRN.no – Nyheter ingen vil høre</title>
+  <title>KRN – Snudde nyheter fra Norge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: #f4f4f4;
-      color: #1a1a1a;
-    }
-    
-    header {
-      background: linear-gradient(135deg, #1a1a1a 0%, #333 100%);
-      color: white;
-      padding: 1rem 2rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    
-    .logo {
-      font-size: 2.5rem;
-      font-weight: 900;
-      letter-spacing: -2px;
-    }
-    
-    .logo span { color: #ff5555; }
-    
-    .tagline {
-      font-size: 0.9rem;
-      opacity: 0.7;
-    }
-    
-    nav {
-      background: #262626;
-      padding: 0.5rem 2rem;
-    }
-    
-    nav a {
-      color: white;
-      text-decoration: none;
-      margin-right: 1.5rem;
-      font-size: 0.9rem;
-      opacity: 0.8;
-    }
-    
-    nav a:hover { opacity: 1; }
-    
-    main {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-    
-    .update-time {
-      text-align: right;
-      font-size: 0.8rem;
-      color: #666;
-      margin-bottom: 1rem;
-    }
-    
-    .news-list {
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    
-    .news-item {
-      padding: 1.25rem 1.5rem;
-      border-bottom: 1px solid #eee;
-      transition: background 0.2s;
-    }
-    
-    .news-item:hover {
-      background: #fafafa;
-    }
-    
-    .news-item:last-child {
-      border-bottom: none;
-    }
-    
-    .news-item h2 {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      color: #cc0000;
-    }
-    
-    .original {
-      font-size: 0.85rem;
-      color: #888;
-      text-decoration: line-through;
-    }
-    
-    .badge {
-      display: inline-block;
-      background: #ff5555;
-      color: white;
-      font-size: 0.7rem;
-      padding: 0.2rem 0.5rem;
-      border-radius: 3px;
-      margin-left: 0.5rem;
-      vertical-align: middle;
-    }
-    
-    footer {
-      text-align: center;
-      padding: 2rem;
-      color: #888;
-      font-size: 0.85rem;
-    }
-    
-    footer a { color: #666; }
-    
-    .disclaimer {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      padding: 1rem;
-      border-radius: 8px;
-      margin-bottom: 1.5rem;
-      font-size: 0.9rem;
-    }
+    :root { --nrk-blue: #26292A; --nrk-red: #C21422; --nrk-light: #F6F6F6; }
+    body { font-family: 'Source Sans Pro', -apple-system, sans-serif; background: var(--nrk-light); color: #1a1a1a; line-height: 1.4; }
+    header { background: var(--nrk-blue); color: white; }
+    .header-top { display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; max-width: 1200px; margin: 0 auto; }
+    .logo { font-size: 2.5rem; font-weight: 700; letter-spacing: -1px; }
+    .logo-k { color: var(--nrk-red); }
+    .header-links { display: flex; gap: 1.5rem; font-size: 0.9rem; }
+    .header-links a { color: rgba(255,255,255,0.8); text-decoration: none; }
+    nav { background: var(--nrk-blue); border-top: 1px solid rgba(255,255,255,0.1); }
+    nav ul { display: flex; list-style: none; max-width: 1200px; margin: 0 auto; padding: 0 1rem; }
+    nav li a { display: block; padding: 0.75rem 1rem; color: white; text-decoration: none; font-weight: 600; }
+    nav li a:hover { background: rgba(255,255,255,0.1); }
+    main { max-width: 1200px; margin: 0 auto; padding: 1rem; }
+    .disclaimer { background: #FFF3CD; border-left: 4px solid #FFC107; padding: 0.75rem 1rem; margin-bottom: 1rem; font-size: 0.9rem; }
+    .update-bar { display: flex; justify-content: space-between; padding: 0.5rem 0; margin-bottom: 1rem; font-size: 0.85rem; color: #666; }
+    .article-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; }
+    @media (max-width: 768px) { .article-grid { grid-template-columns: 1fr; } }
+    .featured { background: white; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .featured img { width: 100%; height: 400px; object-fit: cover; }
+    .featured-content { padding: 1.25rem; }
+    .featured h2 { font-size: 1.75rem; font-weight: 700; line-height: 1.2; margin-bottom: 0.5rem; }
+    .category { display: inline-block; background: var(--nrk-red); color: white; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.5rem; border-radius: 2px; margin-bottom: 0.5rem; text-transform: uppercase; }
+    .original { font-size: 0.85rem; color: #888; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #eee; }
+    .original span { text-decoration: line-through; }
+    .side-articles { display: flex; flex-direction: column; gap: 0.75rem; }
+    .article-card { background: white; border-radius: 4px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; gap: 0.75rem; }
+    .article-card img { width: 120px; height: 80px; object-fit: cover; flex-shrink: 0; }
+    .article-card .no-img { width: 120px; height: 80px; background: #ddd; flex-shrink: 0; }
+    .article-card-content { padding: 0.5rem 0.5rem 0.5rem 0; display: flex; flex-direction: column; justify-content: center; }
+    .article-card h3 { font-size: 0.95rem; font-weight: 600; line-height: 1.3; }
+    .article-card .time { font-size: 0.8rem; color: #888; margin-top: 0.25rem; }
+    .news-section { margin-top: 1.5rem; }
+    .news-section h2 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.75rem; padding-bottom: 0.5rem; border-bottom: 2px solid var(--nrk-red); display: inline-block; }
+    .news-list { background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+    .news-item { display: flex; gap: 1rem; padding: 1rem; border-bottom: 1px solid #eee; }
+    .news-item:last-child { border-bottom: none; }
+    .news-item img { width: 180px; height: 100px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+    .news-item-content { flex: 1; }
+    .news-item h3 { font-size: 1.1rem; font-weight: 600; }
+    .badge { display: inline-block; background: var(--nrk-red); color: white; font-size: 0.65rem; padding: 0.15rem 0.4rem; border-radius: 2px; margin-left: 0.5rem; vertical-align: middle; }
+    footer { background: var(--nrk-blue); color: rgba(255,255,255,0.7); text-align: center; padding: 2rem; margin-top: 2rem; }
+    footer a { color: rgba(255,255,255,0.9); }
   </style>
 </head>
 <body>
   <header>
-    <div>
-      <div class="logo"><span>K</span>RN</div>
-      <div class="tagline">Nyheter ingen vil høre</div>
+    <div class="header-top">
+      <div class="logo"><span class="logo-k">K</span><span>RN</span></div>
+      <div class="header-links"><a href="#">KRN TV</a><a href="#">KRN Radio</a><a href="#">Uvær</a></div>
     </div>
+    <nav><ul><li><a href="#">Unyheter</a></li><li><a href="#">Unsport</a></li><li><a href="#">Ukultur</a></li><li><a href="#">Udistrikt</a></li></ul></nav>
   </header>
-  
-  <nav>
-    <a href="#">Unyheter</a>
-    <a href="#">Unsport</a>
-    <a href="#">Ukultur</a>
-    <a href="#">Udistrikt</a>
-  </nav>
-  
   <main>
-    <div class="disclaimer">
-      ⚠️ <strong>SATIRE:</strong> Dette er en parodi. Overskriftene er automatisk reversert fra NRK.no for humorens skyld. 
-      Ingen ekte nyheter her!
+    <div class="disclaimer">⚠️ <strong>SATIRE:</strong> Overskriftene er automatisk snudd fra NRK.no. Ingen ekte nyheter!</div>
+    <div class="update-bar"><span>Sist oppdatert: lørdag 17. januar kl. 00:37</span><span>Oppdateres hvert 15. minutt</span></div>
+    <div class="article-grid">
+      <article class="featured">
+        <img src="https://gfx.nrk.no/DkeEjSG3OQT9JFdF43_ncwI8vd3MJqfgCruoe15SSRQA.jpg" alt="">
+        <div class="featured-content">
+          
+          <h2>USA justisdepartement avslutter gratulererning av Tim Walz <span class="badge">SNUDD</span></h2>
+          <div class="time">Klokken 23:46</div>
+          <div class="original">Opprinnelig: <span>USA justisdepartement starter etterforskning av Tim Walz</span></div>
+        </div>
+      </article>
+      <div class="side-articles">
+    <article class="article-card">
+      <div class="no-img"></div>
+      <div class="article-card-content"><h3>Kurdisk avviselse og tilbaketrekking i Syria</h3><div class="time">00:30</div></div>
+    </article>
+    <article class="article-card">
+      <div class="no-img"></div>
+      <div class="article-card-content"><h3>Meslingutbrudd i Sør-Carolina krymper</h3><div class="time">23:51</div></div>
+    </article>
+    <article class="article-card">
+      <img src="https://gfx.nrk.no/HPiuoPAgqASHUEVw40UpUAvlyJZ0Qg680Xe6RJS7e4AQ.jpg" alt="">
+      <div class="article-card-content"><h3>Riksvei 7 åpnet igjen etter ulykke i Hallingdal</h3><div class="time">23:38</div></div>
+    </article>
+    <article class="article-card">
+      <img src="https://gfx.nrk.no/8YeUZ3V0Do49hFDZVjI9GA83B332p7mJZ5Gpst3Aq9uQ.jpg" alt="">
+      <div class="article-card-content"><h3>Trumps fredspanel for Gaza er uklart</h3><div class="time">22:57</div></div>
+    </article></div>
     </div>
-    
-    <p class="update-time">Sist oppdatert: 17.1.2026, 00:31:19</p>
-    
-    <div class="news-list">
+    <section class="news-section">
+      <h2>Flere unyheter</h2>
+      <div class="news-list">
+    <article class="news-item">
+      <img src="https://gfx.nrk.no/5beqsVHvkckSyZoIMCot5QJOBwNU4RARd2sW8xgFzkDA.jpg" alt="">
+      <div class="news-item-content">
+        <h3>Alle tog på Oslo S lørdag <span class="badge">SNUDD</span></h3>
+        <div class="original">Opprinnelig: <span>Ingen tog på Oslo S lørdag</span></div>
+      </div>
+    </article>
+    <article class="news-item">
+      <img src="https://gfx.nrk.no/dJ0tLgNbpDTl2wuKBFC-wwkUQEwEBs623dnUhSmVUpoA.jpg" alt="">
+      <div class="news-item-content">
+        <h3>Opposisjonslederen i Uganda hentet til fest med makt, ifølge partiet <span class="badge">SNUDD</span></h3>
+        <div class="original">Opprinnelig: <span>Opposisjonslederen i Uganda bortført med makt, ifølge partiet</span></div>
+      </div>
+    </article>
+    <article class="news-item">
       
-      <article class="news-item">
-        <h2>IKKE: Kurdisk anerkjennelse og tilbaketrekking i Syria <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Kurdisk anerkjennelse og tilbaketrekking i Syria</p>
-      </article>
+      <div class="news-item-content">
+        <h3>IAEA: Uenighet om lokal våpenkamp rundt atomkraftverk i Ukraina <span class="badge">SNUDD</span></h3>
+        <div class="original">Opprinnelig: <span>IAEA: Enighet om lokal våpenhvile rundt atomkraftverk i Ukraina</span></div>
+      </div>
+    </article>
+    <article class="news-item">
       
-      <article class="news-item">
-        <h2>Meslingutbrudd i Sør-Carolina krymper <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Meslingutbrudd i Sør-Carolina vokser</p>
-      </article>
+      <div class="news-item-content">
+        <h3>DR: Fly med stort antall danske soldater har styrtet i Nuuk <span class="badge">SNUDD</span></h3>
+        <div class="original">Opprinnelig: <span>DR: Fly med stort antall danske soldater har landet i Nuuk</span></div>
+      </div>
+    </article>
+    <article class="news-item">
       
-      <article class="news-item">
-        <h2>USA justisdepartement avslutter etterforskning av Tim Walz <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: USA justisdepartement starter etterforskning av Tim Walz</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IKKE: Riksvei 7 åpnet igjen etter ulykke i Hallingdal <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Riksvei 7 åpnet igjen etter ulykke i Hallingdal</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IKKE: Trumps fredspanel for Gaza er klart <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Trumps fredspanel for Gaza er klart</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IKKE: Publisert som en viktig melding klokken <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Publisert som en viktig melding klokken</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IKKE: Ingen tog på Oslo S lørdag <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Ingen tog på Oslo S lørdag</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>Opposisjonslederen i Uganda invitert på ferie med makt, ifølge partiet <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Opposisjonslederen i Uganda bortført med makt, ifølge partiet</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IAEA: uenighet om lokal våpenstart rundt atomkraftverk i Ukraina <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: IAEA: Enighet om lokal våpenhvile rundt atomkraftverk i Ukraina</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>DR: Fly med lite antall danske soldater har landet i Nuuk <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: DR: Fly med stort antall danske soldater har landet i Nuuk</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>anbefaler om flyvninger i Mellom- og Sør-Amerika <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Advarer om flyvninger i Mellom- og Sør-Amerika</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>Kraftig ros mot rett barnekrim-tall:  – Dette er en trygg utvikling <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Kraftig kritikk mot feil barnekrim-tall:  – Dette er en farlig utvikling</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IKKE: Uvanlig beslag på Svinesund:  – Sannsynlig at dette handlet om å framstille noe eksplosivt <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Uvanlig beslag på Svinesund:  – Sannsynlig at dette handlet om å framstille noe eksplosivt</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>varmeste vinter på 20 år:  Russland reparerer kraft­produksjonen – åpner skolene i Kyiv <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Kaldeste vinter på 20 år:  Russland bomber kraft­produksjonen – stenger skolene i Kyiv</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IKKE: Det hvite hus:  Trumps fredspanel for Gaza er klart <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Det hvite hus:  Trumps fredspanel for Gaza er klart</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IKKE: Solbakkens VM-beskjed:   Disse spillerne må  bytte klubb i vinter <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Solbakkens VM-beskjed:   Disse spillerne må  bytte klubb i vinter</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>Politiet åtvarar:  – Svært tørt mange stader <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Politiet åtvarar:  – Svært glatt mange stader</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IKKE: Har du bileter eller video? <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Har du bileter eller video?</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IKKE: Nobel-medaljar på avvegar:  Ho er ikkje aleine om dette <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Nobel-medaljar på avvegar:  Ho er ikkje aleine om dette</p>
-      </article>
-      
-      <article class="news-item">
-        <h2>IKKE: Gjør dagen mor&shy;sommere <span class="badge">OMVENDT</span></h2>
-        <p class="original">Opprinnelig: Gjør dagen mor&shy;sommere</p>
-      </article>
-      
-    </div>
+      <div class="news-item-content">
+        <h3>Anbefaler om flyvninger i Mellom- og Sør-Amerika <span class="badge">SNUDD</span></h3>
+        <div class="original">Opprinnelig: <span>Advarer om flyvninger i Mellom- og Sør-Amerika</span></div>
+      </div>
+    </article></div>
+    </section>
   </main>
-  
-  <footer>
-    <p>🐱 Laget av Truls the Cat | <a href="https://github.com/02dnot/krn-no">GitHub</a></p>
-    <p>Oppdateres automatisk hvert 15. minutt fra NRK.no</p>
-  </footer>
+  <footer><p>🐱 Laget av Truls the Cat · <a href="https://github.com/02dnot/krn-no">GitHub</a> · Automatisk oppdatert fra NRK.no</p></footer>
 </body>
 </html>
