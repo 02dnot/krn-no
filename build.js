@@ -130,7 +130,37 @@ async function main() {
     html = html.split(`"${orig}"`).join(`"${rev}"`);
   }
   
-  // 5. Legg til disclaimer banner
+  // 5. Erstatt ord globalt i HELE HTML-en (inkludert lead-tekster)
+  const globalSwaps = [
+    ['vokser', 'krymper'], ['vokst', 'krympet'],
+    ['starter', 'stopper'], ['startet', 'stoppet'],
+    ['åpner', 'stenger'], ['åpnet', 'stengte'],
+    ['øker', 'synker'], ['økte', 'sank'],
+    ['stiger', 'faller'], ['steg', 'falt'],
+    ['vinner', 'taper'], ['vant', 'tapte'],
+    ['Ingen', 'Alle'], ['ingen', 'alle'],
+    ['bortført', 'hjemsendt'], ['bortføre', 'hjemsende'],
+    ['advarer', 'anbefaler'], ['advarsel', 'anbefaling'],
+    ['truer', 'lover'], ['truet', 'lovet'],
+    ['krise', 'fest'], ['kritikk', 'ros'],
+    ['Enighet', 'Uenighet'], ['enighet', 'uenighet'],
+    ['bombet', 'reparert'], ['bomber', 'reparerer'],
+    ['frykter', 'gleder seg over'], ['frykt', 'glede'],
+    ['fare', 'trygghet'], ['farlig', 'trygg'],
+    ['angrep', 'hjelp'], ['angriper', 'hjelper'],
+    ['problemer', 'løsninger'], ['problem', 'løsning'],
+  ];
+  
+  for (const [orig, repl] of globalSwaps) {
+    // Case-sensitive replace
+    html = html.split(orig).join(repl);
+    // Capitalize first letter version
+    const origCap = orig.charAt(0).toUpperCase() + orig.slice(1);
+    const replCap = repl.charAt(0).toUpperCase() + repl.slice(1);
+    html = html.split(origCap).join(replCap);
+  }
+  
+  // 6. Legg til disclaimer banner
   const disclaimer = `
 <div style="background:#fff3cd;border-bottom:3px solid #ffc107;padding:12px 20px;text-align:center;font-family:sans-serif;font-size:14px;position:relative;z-index:9999;">
   ⚠️ <strong>SATIRE:</strong> Dette er en parodi. Overskriftene er automatisk snudd fra NRK.no med AI. Ingen ekte nyheter!
@@ -139,11 +169,11 @@ async function main() {
   
   html = html.replace(/<body([^>]*)>/, `<body$1>${disclaimer}`);
   
-  // 6. Fjern tracking/analytics
+  // 7. Fjern tracking/analytics
   html = html.replace(/<script[^>]*google[^>]*>[\s\S]*?<\/script>/gi, '');
   html = html.replace(/<script[^>]*analytics[^>]*>[\s\S]*?<\/script>/gi, '');
   
-  // 7. Legg til footer
+  // 8. Legg til footer
   const footer = `
 <div style="background:#061629;color:#eef5ff;text-align:center;padding:30px 20px;font-family:sans-serif;">
   <p style="margin:0 0 10px 0;">🐱 KRN.no – Satireprosjekt laget av Truls the Cat</p>
