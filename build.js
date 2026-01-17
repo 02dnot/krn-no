@@ -30,6 +30,8 @@ OVERSKRIFTER:
 ${headlines.join('\n')}`;
 
   try {
+    console.log('   API key present:', !!apiKey);
+    console.log('   Headlines count:', headlines.length);
     console.log('   Sender til Claude...');
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
@@ -46,11 +48,16 @@ ${headlines.join('\n')}`;
     });
     
     const data = await response.json();
+    console.log('   Response status:', response.status);
+    console.log('   Response keys:', Object.keys(data).join(', '));
     
     if (data.error) {
-      console.log('   API-feil:', data.error.message);
+      console.log('   API-feil:', JSON.stringify(data.error));
       return results;
     }
+    
+    console.log('   API respons type:', data.type);
+    console.log('   API content length:', data.content?.length);
     
     if (data.content?.[0]?.text) {
       const reversed = data.content[0].text.trim().split('\n').filter(l => l.trim());
