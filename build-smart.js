@@ -166,8 +166,9 @@ async function main() {
     let result = text;
     for (const [orig, repl] of swaps) {
       // Case-insensitive replace
-      const regex = new RegExp(orig.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&'), 'gi');
-      result = result.replace(regex, repl);
+      try {
+        result = result.split(orig).join(repl);
+      } catch(e) {}
     }
     return result;
   }
