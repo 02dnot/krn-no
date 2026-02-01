@@ -141,6 +141,16 @@ async function main() {
   // Erstatt tittel
   html = html.replace(/<title>[^<]*<\/title>/, '<title>KRN.no – nyheter snudd på hodet</title>');
   
+  // VIKTIG: Ikke erstatt NRK i URLs! Bare i synlig tekst
+  // Beskytt URLer først ved å markere dem
+  html = html.replace(/static\.nrk\.no/g, 'PROTECTED_STATIC_URL');
+  html = html.replace(/gfx\.nrk\.no/g, 'PROTECTED_GFX_URL');
+  html = html.replace(/www\.nrk\.no/g, 'PROTECTED_WWW_URL');
+  html = html.replace(/data\.nrk\.no/g, 'PROTECTED_DATA_URL');
+  html = html.replace(/psapi\.nrk\.no/g, 'PROTECTED_PSAPI_URL');
+  html = html.replace(/@nrk\.no/g, 'PROTECTED_EMAIL');
+  html = html.replace(/no\.nrk\./g, 'PROTECTED_APPID.');
+  
   // Gjør ALLE erstatninger på server-side først
   console.log('🔄 Omskriver innhold...');
   let count = 0;
@@ -221,6 +231,15 @@ async function main() {
 
   html = html.replace('</head>', clientScript + '</head>');
   
+  // Gjenopprett beskyttede URLer
+  html = html.replace(/PROTECTED_STATIC_URL/g, 'static.nrk.no');
+  html = html.replace(/PROTECTED_GFX_URL/g, 'gfx.nrk.no');
+  html = html.replace(/PROTECTED_WWW_URL/g, 'www.nrk.no');
+  html = html.replace(/PROTECTED_DATA_URL/g, 'data.nrk.no');
+  html = html.replace(/PROTECTED_PSAPI_URL/g, 'psapi.nrk.no');
+  html = html.replace(/PROTECTED_EMAIL/g, '@nrk.no');
+  html = html.replace(/PROTECTED_APPID\./g, 'no.nrk.');
+
   // Banner
   const banner = `
 <div style="background:#d32f2f;color:white;padding:12px 20px;text-align:center;font-family:system-ui,sans-serif;font-size:15px;position:sticky;top:0;z-index:999999;box-shadow:0 2px 8px rgba(0,0,0,0.3);">
